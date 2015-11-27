@@ -23,7 +23,6 @@ import os
 import subprocess
 
 from photofilmstrip.action.IAction import IAction
-#from photofilmstrip.core.MPlayer import MPlayer
 
 
 class ActionPlayVideo(IAction):
@@ -35,11 +34,12 @@ class ActionPlayVideo(IAction):
         return _(u'Play video')
     
     def Execute(self):
-        videoFile = os.path.join(self.outpath, "output.avi")
-        if not os.path.exists(videoFile):
-            videoFile = os.path.join(self.outpath, "output.flv")
-            if not os.path.exists(videoFile):
-                return
+        for ext in ('avi', 'flv', 'mkv', 'ogv'):
+            videoFile = os.path.join(self.outpath, "output.%s" % ext)
+            if os.path.exists(videoFile):
+                break
+        else:
+            return
 
         if os.name == "nt":
             try:
@@ -48,6 +48,3 @@ class ActionPlayVideo(IAction):
                 pass
         else:
             subprocess.Popen(["xdg-open", videoFile])
-#                mplayer = MPlayer(videoFile)
-#                mplayer.Play()
-    

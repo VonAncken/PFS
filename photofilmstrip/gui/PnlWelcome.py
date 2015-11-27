@@ -231,7 +231,7 @@ class PfsHyperlink(wx.Panel):
 
 HTML_TEMPLATE = """<html>
   <body bgcolor="#FFFFFF" witdth="650px">
-  <font color="#0000" face="Verdana">
+  <font color="#000000" face="Verdana">
     <h3 align="center">%(title)s</h3>
 
     <center>

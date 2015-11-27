@@ -19,6 +19,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+import sys
+
 from photofilmstrip.core.Aspect import Aspect
 
 
@@ -27,7 +29,7 @@ class OutputProfile(object):
     PAL  = 1
     NTSC = 2
     
-    def __init__(self, name, bitrate, resPal, resNtsc=None):
+    def __init__(self, name, bitrate, resPal, resNtsc=None, nameWithRes=True):
         self.__name = name
         self.__resPal = resPal
         if resNtsc is None:
@@ -37,6 +39,11 @@ class OutputProfile(object):
         self.__bitrate = bitrate
         
         self.__videoNorm = OutputProfile.PAL
+
+        if nameWithRes:
+            self.__name = "%s (%dx%d)" % (name, 
+                                          self.GetResolution()[0], 
+                                          self.GetResolution()[1])
         
     def GetName(self, withRes=False):
         if withRes:
@@ -66,37 +73,39 @@ class OutputProfile(object):
         self.__videoNorm = norm
     def GetVideoNorm(self):
         return self.__videoNorm
-    
-            
-        
+
+
 
 
 def __CreateDefaultProfiles():
-    vcd  = OutputProfile("VCD",  1150, (352, 288), (352, 240))
-    svcd = OutputProfile("SVCD", 2500, (480, 576), (480, 480))
-    dvd  = OutputProfile("DVD",  8000, (720, 576), (720, 480))
+    if sys.platform == "win32":
+        vcd  = OutputProfile("VCD",  1150, (352, 288), (352, 240), False)
+        svcd = OutputProfile("SVCD", 2500, (480, 576), (480, 480), False)
+        dvd  = OutputProfile("DVD",  8000, (720, 576), (720, 480), False)
     
-    return [vcd, svcd, dvd]
+        return [vcd, svcd, dvd]
+    else:
+        return []
 
     
 def __Create16_9Profiles():
-    medium = OutputProfile("Medium", 8000, (640, 360))
-    hd = OutputProfile("HD", 10000, (1280, 720))
-    fullhd = OutputProfile("FULL-HD", 12000, (1920, 1080))
+    medium = OutputProfile("Medium", 4000, (640, 360))
+    hd = OutputProfile("HD", 6000, (1280, 720))
+    fullhd = OutputProfile("FULL-HD", 8000, (1920, 1080))
     
     return [medium, hd, fullhd]
 
 def __Create4_3Profiles():
-    medium = OutputProfile("Medium", 8000, (640, 480))
-    hd = OutputProfile("HD", 10000, (960, 720))
-    fullhd = OutputProfile("FULL-HD", 12000, (1440, 1080))
+    medium = OutputProfile("Medium", 4000, (640, 480))
+    hd = OutputProfile("HD", 6000, (960, 720))
+    fullhd = OutputProfile("FULL-HD", 8000, (1440, 1080))
     
     return [medium, hd, fullhd]
 
 def __Create3_2Profiles():
-    medium = OutputProfile("Medium", 8000, (720, 480))
-    hd = OutputProfile("HD", 10000, (1080, 720))
-    fullhd = OutputProfile("FULL-HD", 12000, (1620, 1080))
+    medium = OutputProfile("Medium", 4000, (720, 480))
+    hd = OutputProfile("HD", 6000, (1080, 720))
+    fullhd = OutputProfile("FULL-HD", 8000, (1620, 1080))
     
     return [medium, hd, fullhd]
 

@@ -19,6 +19,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+import sys
+
 from photofilmstrip.core.renderer.MovieRenderer import (
         MPEGRenderer, 
         MPEG4MP3Renderer,
@@ -28,16 +30,33 @@ from photofilmstrip.core.renderer.MovieRenderer import (
 from photofilmstrip.core.renderer.SingleFileRenderer import (
         SingleFileRenderer)
 
-from photofilmstrip.core.renderer.PyGameRenderer import (
-        PyGameRenderer)
+# from photofilmstrip.core.renderer.PyGameRenderer import (
+#         PyGameRenderer)
 from photofilmstrip.core.renderer.CairoRenderer import (
         CairoRenderer)
+# from photofilmstrip.core.renderer.OpenCvRenderer import (
+#         OpenCvRenderer)
+from photofilmstrip.core.renderer.GStreamerRenderer import (
+        MkvX264MP3, OggTheoraVorbis)
 
-RENDERERS = [SingleFileRenderer,  
+
+RENDERERS = [SingleFileRenderer]  
+             
+if sys.platform == "win32":
+    RENDERERS.extend([
              MPEG4MP3Renderer,
              MPEG4AC3Renderer,
              MPEGRenderer,
              FlashMovieRenderer,
-             MJPEGRenderer,
-             PyGameRenderer,
-             CairoRenderer]
+             MJPEGRenderer])
+else:
+    RENDERERS.extend([
+             MkvX264MP3,
+             OggTheoraVorbis])
+             
+#     RENDERERS.extend([
+#              OpenCvRenderer,
+#              PyGameRenderer])
+    
+RENDERERS.extend([
+             CairoRenderer])

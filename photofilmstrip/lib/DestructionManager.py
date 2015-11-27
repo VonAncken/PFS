@@ -17,10 +17,15 @@ class DestructionManager(Singleton):
     def Destroy(self):
         while self.__destroyables:
             dest = self.__destroyables.pop(0)
+            logging.getLogger('DestructionManager').debug("destroying '%s'", dest)
+            
             try:
                 dest.Destroy()
+                logging.getLogger('DestructionManager').debug("destroyed '%s'", dest)
             except BaseException as exc:
                 logging.debug("could not destroy '%s': %s", dest, exc, exc_info=True)
+
+        logging.getLogger('DestructionManager').debug("everything destroyed")
         
 
 class IDestroyable(object):

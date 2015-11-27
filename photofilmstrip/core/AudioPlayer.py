@@ -1,9 +1,8 @@
-#!/usr/bin/python
 # encoding: UTF-8
 #
 # PhotoFilmStrip - Creates movies out of your pictures.
 #
-# Copyright (C) 2008 Jens Goepfert
+# Copyright (C) 2014 Jens Goepfert
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,34 +19,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-import os
-import tempfile
 import sys
-from photofilmstrip.AppMixin import AppMixin
-from photofilmstrip import Constants
 
-
-class GuiApp(AppMixin):
-    
-    def _OnStart(self):
-#        if not getattr(sys, 'frozen', False):
-#            import wxversion
-#            wxversion.select("3.0")
-    
-        from photofilmstrip.gui.PhotoFilmStripApp import PhotoFilmStripApp
-        app = PhotoFilmStripApp(0)
-        app.MainLoop()
-
-    def _GetLogFilename(self):
-        if getattr(sys, 'frozen', None) == "windows_exe":
-            return os.path.join(tempfile.gettempdir(), Constants.APP_NAME + ".log")
-        else:
-            return None
-
-
-def main():
-    guiApp = GuiApp()
-    guiApp.Start()
-
-if __name__ == "__main__":
-    main()
+if sys.platform == "win32":
+    # FIXME: Win32 uses mplayer
+    from MPlayer import MPlayer
+    AudioPlayer = MPlayer
+else:
+    from GPlayer import GPlayer
+    AudioPlayer = GPlayer

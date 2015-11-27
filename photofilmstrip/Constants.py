@@ -31,7 +31,7 @@ except ImportError:
 APP_DIR = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "..")
 
 APP_NAME        = "PhotoFilmStrip"
-APP_VERSION     = "1.9.92"
+APP_VERSION     = "2.1.0"
 APP_VERSION_EX  = "%s-%s" % (APP_VERSION, SVN_REV)
 APP_SLOGAN      = "PhotoFilmStrip - Creates movies out of your pictures."
 APP_DESCRIPTION = """\
@@ -40,4 +40,4 @@ PhotoFilmStrip creates movies out of your pictures in just 3 steps. First select
 APP_URL         = "http://www.photofilmstrip.org"
 DEVELOPERS      = [u"Jens Göpfert", 
                    u"Markus Wintermann"] 
-TRANSLATORS     = ["Teza Lprod - http://lprod.org"]
+TRANSLATORS     = ["Teza Lprod - http://lprod.org", "geogeo - http://www.geogeo.gr"]

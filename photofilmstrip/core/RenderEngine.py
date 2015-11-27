@@ -19,8 +19,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+import sys
+
 from photofilmstrip.core.tasks import TaskCropResize, TaskTrans, TaskSubtitle
 from photofilmstrip.core.RenderJob import RenderJob
+from photofilmstrip.core.Picture import Picture
 
 
 class RenderEngine(object):
@@ -47,7 +50,12 @@ class RenderEngine(object):
         cx2 = (w2 / 2.0) + px2
         cy2 = (h2 / 2.0) + py2
         
-        clazz = SplineMovement
+        if pic.GetMovement() == Picture.MOVE_LINEAR:
+            clazz = LinearMovement
+        elif pic.GetMovement() == Picture.MOVE_DELAYED:
+            clazz = DelayedMovement
+        else:
+            clazz = AccelMovement
         mX = clazz(cx2 - cx1, picCount, cx1)
         mY = clazz(cy2 - cy1, picCount, cy1)
         mW = clazz(w2 - w1, picCount, w1)
@@ -72,18 +80,26 @@ class RenderEngine(object):
         """
         returns the number of pictures
         """
-#                         self.__profile.GetFramerate() * \
+        if sys.platform == "win32":
+            # FIXME: Hack for mencoder which is only used under win32
+            fr = 25.0
+        else:
+            fr = self.__profile.GetFramerate()
         return int(round(pic.GetDuration() * \
-                         25.0 * \
+                         fr * \
                          self.__picCountFactor))
     
     def __GetTransCount(self, pic):
         """
         returns the number of pictures needed for the transition
         """
-#                         self.__profile.GetFramerate() * \
+        if sys.platform == "win32":
+            # FIXME: Hack for mencoder which is only used under win32
+            fr = 25.0
+        else:
+            fr = self.__profile.GetFramerate()
         return int(round(pic.GetTransitionDuration() * \
-                         25.0 * \
+                         fr * \
                          self.__picCountFactor))
 
     def __TransAndFinal(self, infoText, trans, 
@@ -190,7 +206,7 @@ class LinearMovement(object):
         return self._v * t + self._s0
         
         
-class SplineMovement(object):
+class AccelMovement(object):
     
     def __init__(self, s, t, s0):
         self._s = float(s)
@@ -211,3 +227,20 @@ class SplineMovement(object):
         
     def Get(self, t):
         return self._a*t**3 + self._b*t**2 + self._c*t + self._d
+
+
+class DelayedMovement(AccelMovement):
+
+    def __init__(self, s, t, s0):
+        AccelMovement.__init__(self, s, t / 2, s0)
+        self._t4th = t / 4
+        self._sAccel = None
+        
+    def Get(self, t):
+        if t < self._t4th:
+            self._sAccel = self._s0
+        elif t < (self._t * 2) - self._t4th:
+            self._sAccel = AccelMovement.Get(self, t - self._t4th)
+        return self._sAccel
+        
+    

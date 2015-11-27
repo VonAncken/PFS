@@ -20,6 +20,7 @@
 #
 
 import sys, os
+import sqlite3
 
 import zipfile
 
@@ -81,11 +82,23 @@ class pfs_build(build):
         build.run(self)
         
     def _make_svn_info(self):
-        # FIXME: SVN1.7
-        if os.path.isfile(".svn/entries"):
-            svnRev = open(".svn/entries", "r").readlines()[3].strip()
-        else:
-            svnRev = 0
+        svnRev = 0
+        if os.path.isfile(".svn/wc.db"):
+            # from svn 1.7
+            try:
+                dbConn = sqlite3.connect(".svn/wc.db")
+                cur = dbConn.execute("select changed_revision from nodes where local_relpath=''")
+                row = cur.fetchone()
+                if row:
+                    svnRev = row[0]
+            except:
+                raise
+        elif os.path.isfile(".svn/entries"):
+            # until svn 1.6
+            try:
+                svnRev = open(".svn/entries", "r").readlines()[3].strip()
+            except:
+                pass
 
         for target in getattr(self.distribution, "windows", []) + \
                       getattr(self.distribution, "console", []):
@@ -102,7 +115,7 @@ class pfs_build(build):
             log.warn("Cannot update image resources! Using images.py from svn")
             return 
         
-        if os.getenv("DISPLAY") is None:
+        if sys.platform.startswith("linux") and os.getenv("DISPLAY") is None:
             log.warn("Cannot update image resources! img2py needs X")
             return 
         
@@ -120,30 +133,22 @@ class pfs_build(build):
                         ("PLAY_PAUSE", "play_pause_16.png"),
                         ("MOTION_RIGHT", "motion_right_24.png"),
                         ("MOTION_LEFT", "motion_left_24.png"),
+                        ("MOTION_SWAP", "motion_swap_24.png"),
                         ("MOTION_INPUT", "motion_input_24.png"),
                         ("MOTION_RANDOM", "motion_random_24.png"),
+                        ("LOCK", "lock_24.png"),
+                        ("UNLOCK", "unlock_24.png"),
                         ("ICON_32", "photofilmstrip_32.png"),
                         ("ICON_48", "photofilmstrip_48.png")
                        )
         
-        update = False
-        for imgRes in imgResources:
-            img_mtime = os.path.getmtime(os.path.join(imgDir, imgRes[1]))
-            log.info("checking image resource %s: %s > %s", 
-                     imgRes[0], img_mtime, target_mtime)
-            
-            if img_mtime > target_mtime:
-                update = True
-                break
-        
-        if update:
-            for idx, (imgName, imgFile) in enumerate(imgResources):
-                img2py(os.path.join(imgDir, imgFile), 
-                       target, append=idx>0, 
-                       imgName=imgName, 
-                       icon=True, 
-                       compressed=True, 
-                       catalog=True)
+        for idx, (imgName, imgFile) in enumerate(imgResources):
+            img2py(os.path.join(imgDir, imgFile), 
+                   target, append=idx>0, 
+                   imgName=imgName, 
+                   icon=True, 
+                   compressed=True, 
+                   catalog=True)
             
     def _make_locale(self):
         for filename in os.listdir("po"):
