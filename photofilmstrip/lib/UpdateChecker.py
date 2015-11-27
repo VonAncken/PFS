@@ -40,9 +40,9 @@ class UpdateChecker(threading.Thread):
         
     def run(self):
         try:
-            fd = urllib.urlopen(self.URL)
+#             fd = urllib.urlopen(self.URL)
 #            fd = open('/home/jens/Projects/Python/PhotoFilmStrip/res/update.txt', 'r')
-
+            raise IOError()
             data = fd.read()
         except IOError:
             self._checkDone = True

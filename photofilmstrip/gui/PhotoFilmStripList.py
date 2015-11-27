@@ -91,7 +91,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         except StandardError:
             dc = pdc
         
-        font = wx.SystemSettings_GetFont(wx.SYS_ANSI_FIXED_FONT)
+        font = wx.SystemSettings.GetFont(wx.SYS_ANSI_FIXED_FONT)
         font.SetPointSize(9)
         dc.SetFont(font)
         dc.SetTextForeground(wx.Colour(237, 156, 0))
@@ -151,13 +151,13 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         for selIdx in self.__selIdxs:
             rect = self.GetThumbRect(selIdx)
             rect.OffsetXY(-vs, 0)
-            col = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+            col = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
             dc.SetBrush(wx.Brush(wx.Colour(col.Red(), col.Green(), col.Blue(), 180)))
             dc.DrawRectangleRect(rect)
         if self.__hvrIdx != -1:
             rect = self.GetThumbRect(self.__hvrIdx)
             rect.OffsetXY(-vs, 0)
-            col = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+            col = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
             color = wx.Colour(col.Red(), col.Green(), col.Blue(), 80)
             dc.SetBrush(wx.Brush(color))
             dc.DrawRectangleRect(rect)

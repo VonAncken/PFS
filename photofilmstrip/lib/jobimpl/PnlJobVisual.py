@@ -21,27 +21,27 @@ class PnlJobVisual(wx.Panel, WxVisualJobHandler):
 
         parent.AddSizer(self.szTop, 0, border=4,
               flag=wx.EXPAND | wx.RIGHT | wx.LEFT)
-        parent.AddWindow(self.staticLine, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.staticLine, 0, border=0, flag=wx.EXPAND)
 
     def _init_coll_szMiddle_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.stJobName, 0, border=4, flag=wx.EXPAND | wx.TOP | wx.BOTTOM)
-        parent.AddWindow(self.gaugeProgress, 0, border=0, flag=wx.EXPAND)
-        parent.AddWindow(self.stJobInfo, 0, border=4, flag=wx.EXPAND | wx.TOP | wx.BOTTOM)
+        parent.Add(self.stJobName, 0, border=4, flag=wx.EXPAND | wx.TOP | wx.BOTTOM)
+        parent.Add(self.gaugeProgress, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.stJobInfo, 0, border=4, flag=wx.EXPAND | wx.TOP | wx.BOTTOM)
 
     def _init_coll_szTop_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.bmpJob, 0, border=0,
+        parent.Add(self.bmpJob, 0, border=0,
               flag=wx.ALIGN_CENTER_VERTICAL)
         parent.AddSpacer(wx.Size(4, 4), border=0, flag=0)
         parent.AddSizer(self.szMiddle, 1, border=0, flag=0)
         parent.AddSpacer(wx.Size(4, 4), border=0, flag=0)
-        parent.AddWindow(self.cmdAction, 0, border=0,
+        parent.Add(self.cmdAction, 0, border=0,
               flag=wx.ALIGN_CENTER_VERTICAL)
         parent.AddSpacer(wx.Size(4, 4), border=0, flag=0)
-        parent.AddWindow(self.cmdMenu, 0, border=0,
+        parent.Add(self.cmdMenu, 0, border=0,
               flag=wx.ALIGN_CENTER_VERTICAL)
         parent.AddSpacer(wx.Size(4, 4), border=0, flag=0)
 
@@ -169,11 +169,11 @@ class PnlJobVisual(wx.Panel, WxVisualJobHandler):
         if value:
             if self.IsShownOnScreen():
                 self.SetFocus()
-            bgCol = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHT)
-            txtCol = wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
+            bgCol = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
+            txtCol = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHTTEXT)
         else:
             bgCol = wx.WHITE
-            txtCol = wx.SystemSettings_GetColour(wx.SYS_COLOUR_LISTBOXTEXT)
+            txtCol = wx.SystemSettings.GetColour(wx.SYS_COLOUR_LISTBOXTEXT)
         self.SetBackgroundColour(bgCol)
         self.stJobName.SetForegroundColour(txtCol)
         self.stJobInfo.SetForegroundColour(txtCol)

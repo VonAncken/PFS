@@ -34,21 +34,21 @@ class PnlDlgHeader(wx.Panel):
     def _init_coll_szHeaderText_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.stHeader, 0, border=0, flag=0)
-        parent.AddWindow(self.stErrMsg, 0, border=4, flag=wx.TOP)
+        parent.Add(self.stHeader, 0, border=0, flag=0)
+        parent.Add(self.stErrMsg, 0, border=4, flag=wx.TOP)
 
     def _init_coll_szMain_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.pnlHeader, 0, border=0, flag=wx.EXPAND)
-        parent.AddWindow(self.slHdr, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.pnlHeader, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.slHdr, 0, border=0, flag=wx.EXPAND)
 
     def _init_coll_szHeader_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.bmpLogo, 0, border=8,
+        parent.Add(self.bmpLogo, 0, border=8,
               flag=wx.ALIGN_CENTER_VERTICAL | wx.ALL)
-        parent.AddSizer(self.szHeaderText, 0, border=8,
+        parent.Add(self.szHeaderText, 0, border=8,
               flag=wx.ALL | wx.ALIGN_CENTER_VERTICAL)
 
     def _init_sizers(self):
@@ -77,7 +77,7 @@ class PnlDlgHeader(wx.Panel):
               size=wx.Size(-1, -1), style=wx.TAB_TRAVERSAL)
         self.pnlHeader.SetBackgroundColour(wx.Colour(255, 255, 255))
 
-        self.bmpLogo = wx.StaticBitmap(bitmap=wx.ArtProvider.GetBitmap('wxART_GO_HOME',
+        self.bmpLogo = wx.StaticBitmap(label=wx.ArtProvider.GetBitmap('wxART_GO_HOME',
               wx.ART_TOOLBAR, (32, 32)), id=wxID_PNLDLGHEADERBMPLOGO,
               name=u'bmpLogo', parent=self.pnlHeader, pos=wx.Point(-1, -1),
               size=wx.Size(-1, -1), style=0)

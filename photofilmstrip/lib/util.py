@@ -28,10 +28,7 @@ def Encode(value, coding="utf-8"):
     return str(value)
 
 def Decode(value, coding="utf-8"):
-    if isinstance(value, str):
-        return value.decode(coding)
-    else:
-        return str(value)
+    return value
     
 def IsPathWritable(path):
     _path = Encode(path, sys.getfilesystemencoding())

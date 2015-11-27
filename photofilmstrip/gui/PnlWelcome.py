@@ -60,12 +60,12 @@ class PnlWelcome(wx.Panel):
 
         self.cmdNew = wx.BitmapButton(self, -1,
                                       wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_OTHER, (64, 64)))
-        self.cmdNew.SetToolTipString(_(u"Create new project"))
+        self.cmdNew.SetToolTip(_(u"Create new project"))
         self.cmdNew.Bind(wx.EVT_BUTTON, self.__frmMain.OnProjectNew)
         
         self.cmdOpen = wx.BitmapButton(self, -1,
                                        wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, (64, 64)))
-        self.cmdOpen.SetToolTipString(_(u"Open existing project"))
+        self.cmdOpen.SetToolTip(_(u"Open existing project"))
         self.cmdOpen.Bind(wx.EVT_BUTTON, self.__frmMain.OnProjectLoad)
         
         sizerCmd = wx.BoxSizer(wx.HORIZONTAL)

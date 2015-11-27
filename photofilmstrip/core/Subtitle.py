@@ -148,7 +148,7 @@ def testRead():
     stp = SrtParser('/home/jens/My PhotoFilmStrips/test2a/Medium (640x480)/output.srt', 25.0)
     
     for f in xrange(800):
-        print f, stp.Get(f)
+        print(f, stp.Get(f))
     
     
 if __name__ == "__main__":

@@ -23,8 +23,8 @@ import sys
 
 if sys.platform == "win32":
     # FIXME: Win32 uses mplayer
-    from MPlayer import MPlayer
+    from photofilmstrip.core.MPlayer import MPlayer
     AudioPlayer = MPlayer
 else:
-    from GPlayer import GPlayer
+    from photofilmstrip.core.GPlayer import GPlayer
     AudioPlayer = GPlayer

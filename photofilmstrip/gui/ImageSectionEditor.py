@@ -187,7 +187,7 @@ class ImageSectionEditor(wx.Panel, Observer):
         if alpha < 0:
             alpha = 0
         dc.SetTextForeground(wx.Colour(255, 255, 255, alpha))
-        font = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FIXED_FONT)
+        font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FIXED_FONT)
         font.SetPointSize(16)
         font.SetWeight(wx.BOLD)
         dc.SetFont(font)

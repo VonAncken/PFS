@@ -96,29 +96,29 @@ class ActionManager(object):
             return
         
         toolBar = wx.ToolBar(parent)
-        toolBar.AddSimpleTool(wx.ID_NEW, 
-                              wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'New Project'), _(u'New Project'))
-        toolBar.AddSimpleTool(wx.ID_OPEN, 
-                              wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'Load Project'), _(u'Load Project'))
-        toolBar.AddSimpleTool(wx.ID_SAVE, 
-                              wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'Save Project'), _(u'Save Project'))
-#        toolBar.AddSimpleTool(wx.ID_SAVEAS, 
-#                              wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE_AS, wx.ART_TOOLBAR, self._toolSize),
-#                              _(u'Save Project as'), _(u'Save Project as'))
+        toolBar.AddTool(wx.ID_NEW, _(u'New Project'),
+                        wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'New Project'))
+        toolBar.AddTool(wx.ID_OPEN, _(u'Load Project'),
+                        wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'Load Project'))
+        toolBar.AddTool(wx.ID_SAVE, _(u'Save Project'),
+                        wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'Save Project'))
+#        toolBar.AddTool(wx.ID_SAVEAS, _(u'Save Project as'), 
+#                        wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE_AS, wx.ART_TOOLBAR, self._toolSize),
+#                        _(u'Save Project as'))
         toolBar.AddSeparator()
-        toolBar.AddSimpleTool(self.ID_PIC_IMPORT, 
-                              wx.ArtProvider.GetBitmap(wx.ART_ADD_BOOKMARK, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'Import Pictures'), _(u'Import Pictures'))
-        toolBar.AddSimpleTool(self.ID_RENDER_FILMSTRIP, 
-                              wx.ArtProvider.GetBitmap(wx.ART_TICK_MARK, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'Render filmstrip'), _(u'Render filmstrip'))
+        toolBar.AddTool(self.ID_PIC_IMPORT, _(u'Import Pictures'),
+                        wx.ArtProvider.GetBitmap(wx.ART_ADD_BOOKMARK, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'Import Pictures'))
+        toolBar.AddTool(self.ID_RENDER_FILMSTRIP, _(u'Render filmstrip'), 
+                        wx.ArtProvider.GetBitmap(wx.ART_TICK_MARK, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'Render filmstrip'))
         toolBar.AddSeparator()
-        toolBar.AddSimpleTool(self.ID_JOB_QUEUE, 
-                              wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_TOOLBAR, self._toolSize),
-                              _(u'Show job queue'), _(u'Show job queue'))
+        toolBar.AddTool(self.ID_JOB_QUEUE, _(u'Show job queue'),
+                        wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_TOOLBAR, self._toolSize),
+                        _(u'Show job queue'))
 
         toolBar.Realize()
         
@@ -133,7 +133,7 @@ class ActionManager(object):
             item = wx.MenuItem(menu, ident)
         if bmp is not None:
             item.SetBitmap(bmp)
-        menu.AppendItem(item)
+        menu.Append(item)
         
     def __MakeMenuFile(self):
         menu = wx.Menu()

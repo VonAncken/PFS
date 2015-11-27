@@ -23,10 +23,10 @@ import wx
 import string
 
 
-class FloatValidator(wx.PyValidator):
+class FloatValidator(wx.Validator):
     
     def __init__(self):
-        wx.PyValidator.__init__(self)
+        wx.Validator.__init__(self)
         self.Bind(wx.EVT_CHAR, self.OnChar)
 
     def Clone(self):

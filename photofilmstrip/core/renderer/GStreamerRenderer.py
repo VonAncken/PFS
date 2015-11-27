@@ -23,8 +23,8 @@ import logging
 import os
 import threading
 
-import Queue
-import cStringIO
+import queue
+import io
 
 try:
     import pygst
@@ -45,7 +45,7 @@ class _GStreamerRenderer(BaseRenderer):
     
     def __init__(self):
         BaseRenderer.__init__(self)
-        self.resQueue = Queue.Queue(20)
+        self.resQueue = queue.Queue(20)
         
         self.active = None
         self.finished = None
@@ -79,7 +79,7 @@ class _GStreamerRenderer(BaseRenderer):
         return BaseRenderer.GetDefaultProperty(prop)
 
     def ProcessFinalize(self, pilImg):
-        res = cStringIO.StringIO()
+        res = io.StringIO()
         pilImg.save(res, 'JPEG', quality=95)
         self.resQueue.put(res.getvalue())
     

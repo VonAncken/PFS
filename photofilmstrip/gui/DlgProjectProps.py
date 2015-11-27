@@ -59,48 +59,48 @@ class DlgProjectProps(wx.Dialog):
     def _init_coll_szMain_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.pnlHdr, 0, border=0, flag=wx.EXPAND)
-        parent.AddSizer(self.szCtrls, 0, border=8, flag=wx.ALL | wx.EXPAND)
-        parent.AddWindow(self.staticLine1, 0, border=0, flag=wx.EXPAND)
-        parent.AddSizer(self.szCmds, 0, border=8, flag=wx.ALL | wx.ALIGN_RIGHT)
+        parent.Add(self.pnlHdr, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.szCtrls, 0, border=8, flag=wx.ALL | wx.EXPAND)
+        parent.Add(self.staticLine1, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.szCmds, 0, border=8, flag=wx.ALL | wx.ALIGN_RIGHT)
 
     def _init_coll_szCmds_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.cmdCancel, 0, border=0, flag=0)
-        parent.AddSpacer(wx.Size(8, 8), border=0, flag=0)
-        parent.AddWindow(self.cmdOk, 0, border=0, flag=0)
+        parent.Add(self.cmdCancel, 0, border=0, flag=0)
+        parent.AddSpacer(8)
+        parent.Add(self.cmdOk, 0, border=0, flag=0)
 
     def _init_coll_szCtrls_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.stProject, (0, 0), border=0,
+        parent.Add(self.stProject, (0, 0), border=0,
               flag=wx.ALIGN_CENTER_VERTICAL, span=(1, 1))
-        parent.AddWindow(self.tcProject, (0, 1), border=0, flag=0, span=(1, 1))
-        parent.AddWindow(self.stFolder, (1, 0), border=0,
+        parent.Add(self.tcProject, (0, 1), border=0, flag=0, span=(1, 1))
+        parent.Add(self.stFolder, (1, 0), border=0,
               flag=wx.ALIGN_CENTER_VERTICAL, span=(1, 1))
-        parent.AddWindow(self.tcFolder, (1, 1), border=0,
+        parent.Add(self.tcFolder, (1, 1), border=0,
               flag=wx.ALIGN_CENTER_VERTICAL, span=(1, 1))
-        parent.AddWindow(self.cmdBrowseFolder, (1, 2), border=0, flag=0,
+        parent.Add(self.cmdBrowseFolder, (1, 2), border=0, flag=0,
               span=(1, 1))
-        parent.AddWindow(self.staticLine, (2, 0), border=0, flag=0, span=(1, 4))
-        parent.AddWindow(self.stAspect, (3, 0), border=0,
+        parent.Add(self.staticLine, (2, 0), border=0, flag=0, span=(1, 4))
+        parent.Add(self.stAspect, (3, 0), border=0,
               flag=wx.ALIGN_CENTER_VERTICAL, span=(1, 1))
-        parent.AddWindow(self.choiceAspect, (3, 1), border=0, flag=0, span=(1,
+        parent.Add(self.choiceAspect, (3, 1), border=0, flag=0, span=(1,
               1))
-        parent.AddWindow(self.cbTotalLength, (4, 0), border=0, flag=0, span=(1,
+        parent.Add(self.cbTotalLength, (4, 0), border=0, flag=0, span=(1,
               1))
-        parent.AddWindow(self.rbManual, (5, 0), border=32,
+        parent.Add(self.rbManual, (5, 0), border=32,
               flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, span=(1, 1))
-        parent.AddWindow(self.timeCtrlTotalLength, (5, 1), border=0, flag=0,
+        parent.Add(self.timeCtrlTotalLength, (5, 1), border=0, flag=0,
               span=(1, 1))
-        parent.AddWindow(self.rbAudio, (6, 0), border=32,
+        parent.Add(self.rbAudio, (6, 0), border=32,
               flag=wx.ALIGN_CENTER_VERTICAL | wx.LEFT, span=(1, 1))
-        parent.AddWindow(self.tcAudiofile, (6, 1), border=0,
+        parent.Add(self.tcAudiofile, (6, 1), border=0,
               flag=wx.ALIGN_CENTER_VERTICAL, span=(1, 1))
-        parent.AddWindow(self.cmdBrowseAudio, (6, 2), border=0, flag=0, span=(1,
+        parent.Add(self.cmdBrowseAudio, (6, 2), border=0, flag=0, span=(1,
               1))
-        parent.AddWindow(self.cmdAudioPreview, (6, 3), border=0, flag=0,
+        parent.Add(self.cmdAudioPreview, (6, 3), border=0, flag=0,
               span=(1, 1))
 
     def _init_sizers(self):
@@ -169,7 +169,7 @@ class DlgProjectProps(wx.Dialog):
               label=_(u'Total length:'), name=u'cbTotalLength', parent=self,
               pos=wx.Point(-1, -1), size=wx.Size(-1, -1), style=0)
         self.cbTotalLength.SetValue(False)
-        self.cbTotalLength.SetToolTipString(_(u'Overrides the duration of single pictures and gives the project this total length.'))
+        self.cbTotalLength.SetToolTip(_(u'Overrides the duration of single pictures and gives the project this total length.'))
         self.cbTotalLength.Bind(wx.EVT_CHECKBOX,
               self.OnControlStatusTotalLength,
               id=wxID_DLGPROJECTPROPSCBTOTALLENGTH)
@@ -250,11 +250,11 @@ class DlgProjectProps(wx.Dialog):
         self.timeCtrlTotalLength.SetMinSize(wx.Size(300, -1))
         self.tcAudiofile.SetMinSize(wx.Size(300, -1))
         
-        defTime = wx.DateTime_Now()
+        defTime = wx.DateTime.Now()
         defTime.SetHMS(0, 0, 30)
-        minTime = wx.DateTime_Now()
+        minTime = wx.DateTime.Now()
         minTime.SetHMS(0, 0, 1)
-        maxTime = wx.DateTime_Now()
+        maxTime = wx.DateTime.Now()
         maxTime.SetHMS(1, 59, 59)
         self.timeCtrlTotalLength.SetValue(defTime)
         self.timeCtrlTotalLength.SetMin(minTime)
