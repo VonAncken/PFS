@@ -33,7 +33,7 @@ class RenderJob(VisualJob):
 
     def FetchImage(self, pic):
         with self.imgCacheLock:
-            if not self.imgCache.has_key(pic.GetKey()):
+            if pic.GetKey() not in self.imgCache:
                 self.__logger.debug("%s: GetImage(%s)", self.GetName(), pic.GetFilename())
                 if len(self.imgKeyStack) > 2:
                     key = self.imgKeyStack.pop(0)
@@ -82,7 +82,7 @@ class RenderJob(VisualJob):
         self.StepProgress()
 
         with self.resultToFetchLock:
-            while self.results.has_key(self.resultToFetch):
+            while self.resultToFetch in self.results:
                 idx = self.resultToFetch
                 
                 self.__logger.debug("%s: resultToFetch: %s",

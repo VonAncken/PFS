@@ -19,7 +19,7 @@ class DestructionManager(Singleton):
             dest = self.__destroyables.pop(0)
             try:
                 dest.Destroy()
-            except BaseException, exc:
+            except BaseException as exc:
                 logging.debug("could not destroy '%s': %s", dest, exc, exc_info=True)
         
 

@@ -42,7 +42,7 @@ class MPlayer(object):
         try:
             proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=False)
             output = proc.communicate()[0]
-        except Exception, err:
+        except Exception as err:
             logging.debug("identify audio with mplayer failed: %s", err)
             output = ""
         

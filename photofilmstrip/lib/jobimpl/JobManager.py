@@ -2,7 +2,7 @@
 
 import logging
 import multiprocessing
-import Queue
+import queue
 import threading
 
 from photofilmstrip.lib.common.Singleton import Singleton
@@ -19,7 +19,7 @@ class _JobCtxGroup(object):
     
     def __init__(self, ctxGroup, workers):
         self.__ctxGroup = ctxGroup
-        self.__idleQueue = Queue.Queue()
+        self.__idleQueue = queue.Queue()
         self.__active = None
 
         self.__doneCount = 0
@@ -101,7 +101,7 @@ class JobManager(Singleton, Destroyable):
         if workerCount is None:
             workerCount = multiprocessing.cpu_count()
             
-        if self.__jobCtxGroups.has_key(workerCtxGroup):
+        if workerCtxGroup in self.__jobCtxGroups:
             raise RuntimeError("group already initialized")
         
         workers = []
@@ -123,7 +123,7 @@ class JobManager(Singleton, Destroyable):
     def EnqueueContext(self, jobContext):
         assert isinstance(threading.current_thread(), threading._MainThread)
         
-        if not self.__jobCtxGroups.has_key(jobContext.GetGroupId()):
+        if jobContext.GetGroupId() not in self.__jobCtxGroups:
             raise RuntimeError("job group %s not available" % jobContext.GetGroupId()) 
 
         self.__logger.debug("%s: register job", jobContext)
@@ -150,10 +150,10 @@ class JobManager(Singleton, Destroyable):
                 if self.__destroying:
                     # if in destroying state raise Queue.Empty() to enter
                     # the except section and get FinishCtx() called
-                    raise Queue.Empty()
+                    raise queue.Empty()
                 workLoad = jobCtxActive.GetWorkLoad()
                 return jobCtxActive, workLoad # FIXME: no tuple
-        except Queue.Empty:
+        except queue.Empty:
             # no more workloads, job done, only __FinishCtx() needs to be done
             # wait for all workers to be done
             jcGroup.IncDoneCount()

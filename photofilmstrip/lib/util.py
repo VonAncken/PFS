@@ -25,20 +25,13 @@ import sys
 
 
 def Encode(value, coding="utf-8"):
-    if isinstance(value, unicode):
-        return value.encode(coding)
-    elif isinstance(value, str):
-        return value
-    else:
-        return str(value)
+    return str(value)
 
 def Decode(value, coding="utf-8"):
-    if isinstance(value, unicode):
-        return value
-    elif isinstance(value, str):
+    if isinstance(value, str):
         return value.decode(coding)
     else:
-        return unicode(value)
+        return str(value)
     
 def IsPathWritable(path):
     _path = Encode(path, sys.getfilesystemencoding())
@@ -48,6 +41,6 @@ def IsPathWritable(path):
         fd.close()
         os.remove(os.path.join(_path, 'test'))
         return True
-    except StandardError, err:
+    except StandardError as err:
         logging.debug("IsPathWritable(%s): %s", path, err)
         return False

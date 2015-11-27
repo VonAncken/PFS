@@ -57,7 +57,7 @@ def __MakeCursor(data):
     return wx.CursorFromImage(img)
 
 def GetNW():
-    if __CURSORS.has_key('NW'):
+    if 'NW' in __CURSORS:
         return __CURSORS['NW']
     
     result = []
@@ -71,7 +71,7 @@ def GetNW():
     return cursor
 
 def GetSE():
-    if __CURSORS.has_key('SE'):
+    if 'SE' in __CURSORS:
         return __CURSORS['SE']
     
     cursor = __MakeCursor(DATA)
@@ -79,7 +79,7 @@ def GetSE():
     return cursor
 
 def GetSW():
-    if __CURSORS.has_key('SW'):
+    if 'SW' in __CURSORS:
         return __CURSORS['SW']
     
     result = []
@@ -93,7 +93,7 @@ def GetSW():
     return cursor
 
 def GetNE():
-    if __CURSORS.has_key('NE'):
+    if 'NE' in __CURSORS:
         return __CURSORS['NE']
     
     result = []

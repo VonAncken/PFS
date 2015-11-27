@@ -33,10 +33,10 @@ if sys.platform == "win32":
     _path.append(os.path.join(Constants.APP_DIR, "lib", "mplayer"))
     os.putenv("PATH", ";".join(_path)) 
 
-    import _subprocess # IGNORE:F0401
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= _subprocess.STARTF_USESHOWWINDOW
-    subprocess.STARTUPINFO = lambda: startupinfo
+#    import _subprocess # IGNORE:F0401
+#    startupinfo = subprocess.STARTUPINFO()
+#    startupinfo.dwFlags |= _subprocess.STARTF_USESHOWWINDOW
+#    subprocess.STARTUPINFO = lambda: startupinfo
 
 
 class AppMixin(object):

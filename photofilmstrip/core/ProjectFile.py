@@ -141,10 +141,10 @@ class ProjectFile(object):
                 return True
             except sqlite3.DatabaseError:
                 return False
-            except sqlite3.DatabaseError, err:
+            except sqlite3.DatabaseError as err:
                 logging.debug("IsOk(%s): %s", self._filename, err)
                 return False
-            except BaseException, err:
+            except BaseException as err:
                 logging.debug("IsOk(%s): %s", self._filename, err)
                 return False
             return False
@@ -263,7 +263,7 @@ class ProjectFile(object):
             picData = self.__LoadSafe(row, 'data', None)
             if picData is None:
                 if not (os.path.exists(imgPath) and os.path.isfile(imgFile)):
-                    if not self.__altPaths.has_key(imgPath):
+                    if imgPath not in self.__altPaths:
                         self._SelectAlternatePath(imgPath)
                         
                     imgFile = os.path.join(self.__altPaths.get(imgPath, imgPath), 

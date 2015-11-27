@@ -406,7 +406,7 @@ class DlgProjectProps(wx.Dialog):
             dateTime.SetHMS(0, int(secs / 60.0), int(secs) % 60)
             try:
                 self.timeCtrlTotalLength.SetValue(dateTime)
-            except ValueError, err:
+            except ValueError as err:
                 logging.debug("invalid media length (%s): %s", dateTime, err)
 
             self.pnlHdr.SetErrorMessage(u"")
@@ -474,7 +474,7 @@ class DlgProjectProps(wx.Dialog):
             if resp == wx.ID_YES:
                 try:
                     os.makedirs(path)
-                except StandardError, err:
+                except StandardError as err:
                     dlg = wx.MessageDialog(self,
                                            _(u"Cannot create folder: %s") % unicode(err),
                                            _(u"Error"),

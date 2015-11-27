@@ -524,7 +524,7 @@ class FrmMain(wx.Frame, Observer, WxVisualJobManager):
         prjFile = WxProjectFile(self, project, filepath)
         try:
             prjFile.Save(includePics)
-        except StandardError, err:
+        except StandardError as err:
             dlg = wx.MessageDialog(self,
                                    _(u"Could not save the file '%(file)s': %(errMsg)s") % \
                                             {'file': Decode(filepath),

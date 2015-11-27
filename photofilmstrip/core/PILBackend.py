@@ -42,11 +42,11 @@ def RotateExif(pilImg):
     rotation = 0 
     try:
         exif = pilImg._getexif()
-        if isinstance(exif, dict) and exif.has_key(exifOrient):
+        if isinstance(exif, dict) and exifOrient in exif:
             rotation = exif[exifOrient]
     except AttributeError:
         pass
-    except Exception, err:
+    except Exception as err:
         logging.debug("PILBackend.RotateExif(): %s", err, exc_info=1)
             
     if rotation == 2:
@@ -180,7 +180,7 @@ def GetExifRotation(pilImg):
     rotation = 0 
     try:
         exif = pilImg._getexif()
-        if isinstance(exif, dict) and exif.has_key(exifOrient):
+        if isinstance(exif, dict) and exifOrient in exif:
             rotation = exif[exifOrient]
     except AttributeError:
         pass

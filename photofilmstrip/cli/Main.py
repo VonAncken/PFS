@@ -168,7 +168,7 @@ def main():
             if not os.path.exists(outpath):
                 try:
                     os.makedirs(outpath)
-                except StandardError, err:
+                except StandardError as err:
                     logging.error(_(u"cannot create output path: %s"), err)
                     return 7
     else:

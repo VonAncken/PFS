@@ -23,7 +23,7 @@ import logging
 import os
 import re
 import threading
-import Queue
+import queue
 import cStringIO
 from subprocess import Popen, PIPE, STDOUT
 
@@ -36,7 +36,7 @@ from photofilmstrip.core.BaseRenderer import BaseRenderer
 class ResultFeeder(threading.Thread):
     def __init__(self, renderer):
         threading.Thread.__init__(self, name="ResultFeeder")
-        self.resQueue = Queue.Queue(20)
+        self.resQueue = queue.Queue(20)
         self.active = 1
         self.renderer = renderer
         
@@ -45,7 +45,7 @@ class ResultFeeder(threading.Thread):
             result = None
             try:
                 result = self.resQueue.get(True, 1.0)
-            except Queue.Empty:
+            except queue.Empty:
                 if self.active:
                     continue
                 else:
@@ -72,7 +72,7 @@ class MEncoderRenderer(BaseRenderer):
         try:
             proc = Popen(["mencoder"], stdout=PIPE, stderr=STDOUT, shell=False)
             output = proc.communicate()[0]
-        except Exception, err:
+        except Exception as err:
             logging.debug("checking for mencoder failed: %s", err)
             output = ""
         if not re.search("^(mplayer|mencoder)", output, re.I):
@@ -278,7 +278,7 @@ class MEncoderMP3Renderer(MEncoderRenderer):
         try:
             proc = Popen(["mencoder", "-oac", "help"], stdout=PIPE, stderr=STDOUT, shell=False)
             output = proc.communicate()[0]
-        except Exception, err:
+        except Exception as err:
             logging.debug("checking for mencoder (mp3support) failed: %s", err)
             output = ""
         
