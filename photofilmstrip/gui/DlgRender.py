@@ -23,7 +23,7 @@
 import os
 
 import wx
-import wx.combo
+# import wx.combo
 
 
 from photofilmstrip.core.OutputProfile import OutputProfile, GetOutputProfiles
@@ -290,7 +290,8 @@ class DlgRender(wx.Dialog):
         event.Skip()
 
 
-class FormatComboBox(wx.combo.OwnerDrawnComboBox):
+# class FormatComboBox(wx.combo.OwnerDrawnComboBox):
+class FormatComboBox(wx.ComboBox):
     
     def __init__(self, *args, **kwargs):
         wx.combo.OwnerDrawnComboBox.__init__(self, *args, **kwargs)
@@ -316,7 +317,7 @@ class FormatComboBox(wx.combo.OwnerDrawnComboBox):
         rect2.Deflate(5, 0)
 
         if data.PMessages:
-            bmp = wx.ArtProvider_GetBitmap(wx.ART_ERROR, wx.ART_OTHER, (16, 16))
+            bmp = wx.ArtProvider.GetBitmap(wx.ART_ERROR, wx.ART_OTHER, (16, 16))
             dc.SetTextForeground(wx.SystemSettings_GetColour(wx.SYS_COLOUR_GRAYTEXT))
         else:
             bmp = wx.NullBitmap

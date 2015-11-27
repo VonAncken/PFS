@@ -23,7 +23,7 @@ import os
 import wx
 import wx.html
 import wx.lib.wxpTag
-import wx.lib.hyperlink
+# import wx.lib.hyperlink
 
 from photofilmstrip import Constants
 from photofilmstrip.lib.Settings import Settings
@@ -55,16 +55,16 @@ class PnlWelcome(wx.Panel):
 
         self.htmlWin = wx.html.HtmlWindow(self, -1, style=wx.SIMPLE_BORDER)
         self.htmlWin.Bind(EVT_LINK, self.OnLinkClicked)
-        self.RefreshPage()
+#         self.RefreshPage()
         self.htmlWin.SetSizeHints(650, -1, 650, -1)
 
         self.cmdNew = wx.BitmapButton(self, -1,
-                                      wx.ArtProvider_GetBitmap(wx.ART_NEW, wx.ART_OTHER, (64, 64)))
+                                      wx.ArtProvider.GetBitmap(wx.ART_NEW, wx.ART_OTHER, (64, 64)))
         self.cmdNew.SetToolTipString(_(u"Create new project"))
         self.cmdNew.Bind(wx.EVT_BUTTON, self.__frmMain.OnProjectNew)
         
         self.cmdOpen = wx.BitmapButton(self, -1,
-                                       wx.ArtProvider_GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, (64, 64)))
+                                       wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_OTHER, (64, 64)))
         self.cmdOpen.SetToolTipString(_(u"Open existing project"))
         self.cmdOpen.Bind(wx.EVT_BUTTON, self.__frmMain.OnProjectLoad)
         
@@ -99,7 +99,7 @@ class PnlWelcome(wx.Panel):
                     htmlParts.append(htmlPart)
     
             breakAt = 4
-            for idx in xrange((len(htmlParts) - 1) / breakAt):
+            for idx in range((len(htmlParts) - 1) / breakAt):
                 htmlParts.insert(idx + ((idx + 1) * breakAt), "</tr><tr>")
             
             if htmlParts:
@@ -155,18 +155,18 @@ class PnlWelcome(wx.Panel):
     def OnPaint(self, event):
         dc = wx.AutoBufferedPaintDC(self)
         sz = self.GetSize()
-        dc.SetBackground(wx.Brush(wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE)))
+        dc.SetBackground(wx.Brush(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE)))
         dc.Clear()
         
-        rect = wx.RectPS(wx.Point(0, 180), sz) 
+        rect = wx.Rect(0, 180, sz[0], sz[1]) 
         dc.GradientFillLinear(rect, 
-                              wx.SystemSettings_GetColour(wx.SYS_COLOUR_BTNFACE), 
-                              wx.SystemSettings_GetColour(wx.SYS_COLOUR_HIGHLIGHT), 
+                              wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNFACE), 
+                              wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT), 
                               wx.SOUTH)
         
         font = wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         dc.SetFont(font)
-        dc.SetTextForeground(wx.Color(127, 127, 127))
+        dc.SetTextForeground(wx.Colour(127, 127, 127))
         dc.DrawLabel(self.title, wx.Rect(0, 10, sz[0], 50), wx.ALIGN_CENTER_HORIZONTAL)
         
     def OnLinkClicked(self, event):
@@ -189,7 +189,7 @@ class LinkOpenPfs(IconLabelLink):
                 wxImg = wx.ImageFromStream(PILBackend.ImageToStream(img), wx.BITMAP_TYPE_JPEG)
                 bmp = wxImg.ConvertToBitmap()
             else:
-                bmp = wx.ArtProvider_GetBitmap("PFS_ICON_48", wx.ART_OTHER)
+                bmp = wx.ArtProvider.GetBitmap("PFS_ICON_48", wx.ART_OTHER)
             descr = "%d images" % imgCount
             LinkOpenPfs.BMP_MAP[filename] = (bmp, descr)
         
@@ -218,7 +218,8 @@ class LinkClickedEvent(wx.PyCommandEvent):
         return self._filename
 
 
-class PfsHyperlink(wx.lib.hyperlink.HyperLinkCtrl):
+# class PfsHyperlink(wx.lib.hyperlink.HyperLinkCtrl):
+class PfsHyperlink(wx.Panel):
     
     def __init__(self, parent, size=wx.DefaultSize, label=""):
         wx.lib.hyperlink.HyperLinkCtrl.__init__(self, parent, -1, 

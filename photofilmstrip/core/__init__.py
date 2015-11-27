@@ -21,8 +21,8 @@
 
 # WA: py2exe and PIL
 import os
-if os.name == "nt":
-    import Image
+if os.name == "nt2":
+    from PIL import Image
 
     import ArgImagePlugin
     import BmpImagePlugin

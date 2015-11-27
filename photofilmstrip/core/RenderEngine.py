@@ -54,7 +54,7 @@ class RenderEngine(object):
         mH = clazz(h2 - h1, picCount, h1)
 
         pathRects = []
-        for step in xrange(picCount):
+        for step in range(picCount):
             px = mX.Get(step)
             py = mY.Get(step)
             width = mW.Get(step)

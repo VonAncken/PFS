@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-import cStringIO
+import io
 import sys
 import traceback
 import urllib
@@ -43,7 +43,7 @@ class DlgBugReport(wx.Dialog):
         def excepthook(etype, value, tb):
             if not getattr(sys, 'frozen', False):
                 traceback.print_exception(etype, value, tb)
-            output = cStringIO.StringIO()
+            output = io.StringIO()
             traceback.print_exception(etype, value, tb, file=output)
             dlg = DlgBugReport(cls.PARENT, output.getvalue()) 
             dlg.ShowModal()
@@ -57,7 +57,7 @@ class DlgBugReport(wx.Dialog):
         
         text = _(u"An unexpected error occured. Do you want to send this bug report to the developers of %s?") % Constants.APP_NAME
         
-        stBmp = wx.StaticBitmap(self, -1, wx.ArtProvider_GetBitmap(wx.ART_ERROR, wx.ART_OTHER, (32, 32)))
+        stBmp = wx.StaticBitmap(self, -1, wx.ArtProvider.GetBitmap(wx.ART_ERROR, wx.ART_OTHER, (32, 32)))
         stMsg = wx.StaticText(self, -1, wordwrap(text, 300, wx.ClientDC(self)))
         
         szTop = wx.BoxSizer(wx.HORIZONTAL)

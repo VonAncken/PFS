@@ -212,7 +212,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
                         self.Select(idx)
                     else:
                         step = 1 if idx > self.__selIdxs[0] else -1
-                        for ct, _idx in enumerate(xrange(self.__selIdxs[0], 
+                        for ct, _idx in enumerate(range(self.__selIdxs[0], 
                                                          idx + step, 
                                                          step)):
                             self.Select(_idx, deselectOthers=ct == 0)
@@ -330,7 +330,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
     def InsertPicture(self, idx, pic):
         self.__pictures.insert(idx, pic)
         
-        for i in xrange(len(self.__selIdxs)):
+        for i in range(len(self.__selIdxs)):
             if self.__selIdxs[i] >= idx \
             and self.__selIdxs[i] + 1 not in self.__selIdxs:
                 self.__selIdxs[i] += 1
@@ -358,7 +358,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         if len(self.__selIdxs) == 0:
             self.__selIdxs.append(firstSel)
             
-        for i in xrange(len(self.__selIdxs)):
+        for i in range(len(self.__selIdxs)):
             if self.__selIdxs[i] > idx \
             and self.__selIdxs[i] - 1 not in self.__selIdxs:
                 self.__selIdxs[i] -= 1
@@ -394,7 +394,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         except IndexError:
             return None
     def SetPicture(self, idx, pic):
-        if idx in xrange(len(self.__pictures)):
+        if idx in range(len(self.__pictures)):
             self.__pictures[idx] = pic
             self.Refresh()
             
@@ -413,7 +413,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         return selPics
     
     def Select(self, idx, on=True, deselectOthers=True):
-        if idx in xrange(len(self.__pictures)):
+        if idx in range(len(self.__pictures)):
             if deselectOthers:
                 newSel = []
             else:

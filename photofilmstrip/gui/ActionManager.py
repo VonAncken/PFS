@@ -154,7 +154,7 @@ class ActionManager(object):
         self.__CreateMenuItem(menu, 
                               self.ID_PROJECT_PROPS, 
                               _("&Properties"), 
-                              wx.ArtProvider_GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_MENU, wx.DefaultSize))
+                              wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_MENU, wx.DefaultSize))
         menu.AppendSeparator()
         self.__CreateMenuItem(menu, 
                               wx.ID_EXIT, 

@@ -24,7 +24,7 @@ import os
 import re
 import threading
 import queue
-import cStringIO
+import io
 from subprocess import Popen, PIPE, STDOUT
 
 from photofilmstrip.core.Aspect import Aspect
@@ -91,7 +91,7 @@ class MEncoderRenderer(BaseRenderer):
     def ProcessFinalize(self, pilImg):
 #        pilImg.save(self._procEncoder.stdin, 'JPEG', quality=95)
 #        return
-        res = cStringIO.StringIO()
+        res = io.StringIO()
         pilImg.save(res, 'JPEG', quality=95)
         self._feeder.resQueue.put(res.getvalue())
     

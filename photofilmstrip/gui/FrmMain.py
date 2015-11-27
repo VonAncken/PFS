@@ -23,7 +23,7 @@
 import os
 
 import wx
-import wx.aui
+import wx.lib.agw.aui as wxaui
 from wx.lib.wordwrap import wordwrap
 
 from photofilmstrip import Constants
@@ -64,8 +64,8 @@ class FrmMain(wx.Frame, Observer, WxVisualJobManager):
         self.SetTitle(Constants.APP_NAME)
         
         iconBundle = wx.IconBundle()
-        iconBundle.AddIcon(wx.ArtProvider_GetIcon("PFS_ICON_32", wx.ART_OTHER))
-        iconBundle.AddIcon(wx.ArtProvider_GetIcon("PFS_ICON_48", wx.ART_OTHER))
+        iconBundle.AddIcon(wx.ArtProvider.GetIcon("PFS_ICON_32", wx.ART_OTHER))
+        iconBundle.AddIcon(wx.ArtProvider.GetIcon("PFS_ICON_48", wx.ART_OTHER))
         self.SetIcons(iconBundle)
         
         self.statusBar = wx.StatusBar(self)
@@ -80,9 +80,9 @@ class FrmMain(wx.Frame, Observer, WxVisualJobManager):
         toolBar = self.actionManager.GetToolBar(self)
         self.SetToolBar(toolBar)
         
-        self.notebook = wx.aui.AuiNotebook(self, -1, style=wx.aui.AUI_NB_CLOSE_ON_ACTIVE_TAB)
-        self.notebook.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
-        self.notebook.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.OnPageClose)
+        self.notebook = wxaui.AuiNotebook(self, -1, style=wxaui.AUI_NB_CLOSE_ON_ACTIVE_TAB)
+        self.notebook.Bind(wxaui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
+        self.notebook.Bind(wxaui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.OnPageClose)
         
         self.pnlWelcome = PnlWelcome(self.notebook, self)
         self.pnlWelcome.SetDropTarget(ProjectDropTarget(self))
@@ -232,7 +232,7 @@ class FrmMain(wx.Frame, Observer, WxVisualJobManager):
             self.SetTitle(Constants.APP_NAME)
         else:
             page = self.notebook.GetPage(sel)
-            self.notebook.SetWindowStyleFlag(wx.aui.AUI_NB_CLOSE_ON_ACTIVE_TAB)
+            self.notebook.SetWindowStyleFlag(wxaui.AUI_NB_CLOSE_ON_ACTIVE_TAB)
             filepath = page.GetProject().GetFilename()
             self.SetTitle(Constants.APP_NAME + u' - ' + Decode(filepath))
             

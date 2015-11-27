@@ -20,15 +20,15 @@
 #
 
 import logging
-import cStringIO
+import io
 
-import Image, ImageDraw
+from PIL import Image, ImageDraw
 
 from photofilmstrip.core.Picture import Picture
 
 
 def ImageToStream(pilImg, imgFormat="JPEG"):
-    fd = cStringIO.StringIO()
+    fd = io.StringIO()
     pilImg.save(fd, imgFormat)
     fd.seek(0)
     return fd
@@ -136,7 +136,7 @@ def __GetImage(picture):
         # discard the thumbnail
         img = Image.open(picture.GetFilename())
         picture.SetDummy(False)
-    except StandardError, err:
+    except StandardError as err:
         logging.debug("PILBackend.GetImage(%s): %s", picture.GetFilename(), err, exc_info=1)
         img = __CreateDummyImage(str(err))
         picture.SetDummy(True)
@@ -184,7 +184,7 @@ def GetExifRotation(pilImg):
             rotation = exif[exifOrient]
     except AttributeError:
         pass
-    except Exception, err:
+    except Exception as err:
         logging.debug("PILBackend.RotateExif(): %s", err, exc_info=1)
             
     if rotation == 3:

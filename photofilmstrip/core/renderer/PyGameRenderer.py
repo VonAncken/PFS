@@ -71,7 +71,7 @@ class PyGameRenderer(BaseRenderer):
             self._screen.blit(pygameImg, (0, 0))
             pygame.display.flip()
         self._mainClock.tick(self._framerate)
-        print self._mainClock.get_fps()
+        print(self._mainClock.get_fps())
     
     def ProcessAbort(self):
         pygame.mixer.music.stop()

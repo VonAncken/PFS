@@ -68,7 +68,7 @@ class MPlayer(object):
             cmd = ["mplayer", self.filename]
             try:
                 self.__proc = Popen(cmd, stdin=PIPE, stderr=PIPE, stdout=PIPE, shell=False)
-            except Exception, err:
+            except Exception as err:
                 logging.debug("playing audio with mplayer failed: %s", err)
                 self.__proc = None
     
