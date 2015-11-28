@@ -75,7 +75,7 @@ class _MEncoderRenderer(BaseRenderer):
         except Exception as err:
             logging.debug("checking for mencoder failed: %s", err)
             output = ""
-        if not re.search("^(mplayer|mencoder)", output, re.I):
+        if not re.search("^(mplayer|mencoder)", str(output), re.I):
             msgList.append(_(u"mencoder (mencoder) required!"))
 
     @staticmethod

@@ -543,7 +543,7 @@ class FrmMain(wx.Frame, Observer, WxVisualJobManager):
             dlg = wx.MessageDialog(self,
                                    _(u"Could not save the file '%(file)s': %(errMsg)s") % \
                                             {'file': Decode(filepath),
-                                             'errMsg': unicode(err)}, 
+                                             'errMsg': str(err)}, 
                                    _(u"Question"),
                                    wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()

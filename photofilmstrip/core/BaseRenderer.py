@@ -98,7 +98,7 @@ class BaseRenderer(object):
 class RendererException(Exception):
     
     def __init__(self, msg):
-        if isinstance(msg, unicode):
+        if isinstance(msg, str):
             self.message = msg.encode("utf-8")
         self.msg = msg
         

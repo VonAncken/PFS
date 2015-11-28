@@ -30,5 +30,5 @@ class SingletonType(type):
         return self.instance
 
 
-class Singleton(object):
-    __metaclass__ = SingletonType
+class Singleton(metaclass=SingletonType):
+    pass

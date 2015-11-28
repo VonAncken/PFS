@@ -180,7 +180,7 @@ class JobManager(Singleton, Destroyable):
             if self.__destroying:
                 raise WorkerAbortSignal()
             else:
-                raise Queue.Empty()
+                raise queue.Empty()
 
     def __StartCtx(self, ctx):
         self.__logger.debug("<%s> starting %s...", 

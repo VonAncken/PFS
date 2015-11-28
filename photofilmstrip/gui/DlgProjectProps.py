@@ -183,7 +183,7 @@ class DlgProjectProps(wx.Dialog):
 
         self.timeCtrlTotalLength = wx.lib.masked.timectrl.TimeCtrl(display_seconds=True,
               fmt24hr=True, id=wxID_DLGPROJECTPROPSTIMECTRLTOTALLENGTH,
-              name=u'timeCtrlTotalLength', oob_color=wx.NamedColour('Yellow'),
+              name=u'timeCtrlTotalLength', oob_color=wx.Colour('Yellow'),
               parent=self, pos=wx.Point(-1, -1), size=wx.Size(-1, -1), style=0,
               useFixedWidthFont=True, value='12:00:00 AM')
         self.timeCtrlTotalLength.Enable(False)
@@ -476,7 +476,7 @@ class DlgProjectProps(wx.Dialog):
                     os.makedirs(path)
                 except StandardError as err:
                     dlg = wx.MessageDialog(self,
-                                           _(u"Cannot create folder: %s") % unicode(err),
+                                           _(u"Cannot create folder: %s") % str(err),
                                            _(u"Error"),
                                            wx.OK | wx.ICON_ERROR)
                     dlg.ShowModal()

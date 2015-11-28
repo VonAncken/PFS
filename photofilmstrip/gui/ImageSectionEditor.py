@@ -70,7 +70,7 @@ class ImageSectionEditor(wx.Panel, Observer):
         Observer.__init__(self)
         
         self.SetMinSize(wx.Size(200, 150))
-        self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
         self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
 
         self.RATIO = 16.0 / 9.0
