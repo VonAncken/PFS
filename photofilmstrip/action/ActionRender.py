@@ -26,7 +26,7 @@ from photofilmstrip.action.IAction import IAction
 
 from photofilmstrip.lib.Settings import Settings
 from photofilmstrip.core.OutputProfile import GetOutputProfiles
-from photofilmstrip.core.renderer import RENDERERS
+from photofilmstrip.core.Renderer import RENDERERS
 from photofilmstrip.lib.util import Encode
 from photofilmstrip.core.RenderEngine import RenderEngine
 
@@ -87,6 +87,11 @@ class ActionRender(IAction):
         outpath = self._CheckAndGetOutpath()
         
         self._SaveSettings()
+        
+        savedProps = Settings().GetRenderProperties(self.__rendererClass.__name__)
+        for prop in self.__rendererClass.GetProperties():
+            value = savedProps.get(prop.lower(), self.__rendererClass.GetProperty(prop))
+            self.__rendererClass.SetProperty(prop, value)
         
         totalLength = self.__photoFilmStrip.GetDuration(False)
         

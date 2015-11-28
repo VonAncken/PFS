@@ -2,7 +2,7 @@
 #
 # PhotoFilmStrip - Creates movies out of your pictures.
 #
-# Copyright (C) 2014 Jens Goepfert
+# Copyright (C) 2011 Jens Goepfert
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,20 +23,19 @@ import logging
 import os
 import re
 import threading
-import Queue
-import cStringIO
+import queue
+import io
 from subprocess import Popen, PIPE, STDOUT
 
 from photofilmstrip.core.Aspect import Aspect
 from photofilmstrip.core.OutputProfile import OutputProfile
-from photofilmstrip.core.renderer.RendererException import RendererException
-from photofilmstrip.core.BaseRenderer import BaseRenderer
+from photofilmstrip.core.BaseRenderer import BaseRenderer, RendererException
 
 
 class ResultFeeder(threading.Thread):
     def __init__(self, renderer):
         threading.Thread.__init__(self, name="ResultFeeder")
-        self.resQueue = Queue.Queue(20)
+        self.resQueue = queue.Queue(20)
         self.active = 1
         self.renderer = renderer
         
@@ -45,7 +44,7 @@ class ResultFeeder(threading.Thread):
             result = None
             try:
                 result = self.resQueue.get(True, 1.0)
-            except Queue.Empty:
+            except queue.Empty:
                 if self.active:
                     continue
                 else:
@@ -57,7 +56,7 @@ class ResultFeeder(threading.Thread):
             self.renderer.GetSink().write(result)
 
 
-class LibAvRenderer(BaseRenderer):
+class _MEncoderRenderer(BaseRenderer):
     
     def __init__(self):
         BaseRenderer.__init__(self)
@@ -66,17 +65,18 @@ class LibAvRenderer(BaseRenderer):
         self._encErr = None
         
         self._procEncoder = None
+        self._feeder = None
         
     @staticmethod
     def CheckDependencies(msgList):
         try:
-            proc = Popen(["avconv"], stdout=PIPE, stderr=STDOUT, shell=False)
+            proc = Popen(["mencoder"], stdout=PIPE, stderr=STDOUT, shell=False)
             output = proc.communicate()[0]
-        except Exception, err:
-            logging.debug("checking for libav-tools failed: %s", err)
+        except Exception as err:
+            logging.debug("checking for mencoder failed: %s", err)
             output = ""
-        if output.find("avconv") == -1:
-            msgList.append(_(u"libav (libav-tools) required!"))
+        if not re.search("^(mplayer|mencoder)", output, re.I):
+            msgList.append(_(u"mencoder (mencoder) required!"))
 
     @staticmethod
     def GetProperties():
@@ -91,7 +91,7 @@ class LibAvRenderer(BaseRenderer):
     def ProcessFinalize(self, pilImg):
 #        pilImg.save(self._procEncoder.stdin, 'JPEG', quality=95)
 #        return
-        res = cStringIO.StringIO()
+        res = io.StringIO()
         pilImg.save(res, 'JPEG', quality=95)
         self._feeder.resQueue.put(res.getvalue())
     
@@ -108,13 +108,14 @@ class LibAvRenderer(BaseRenderer):
             if log:
                 log.close()
         self._procEncoder = None
+        self._feeder = None
         
     def ProcessAbort(self):
         self.__CleanUp()
 
     def Prepare(self):
-        self._encOut = open(os.path.join(self.GetOutputPath(), "libav_out.log"), 'w')
-        self._encErr = open(os.path.join(self.GetOutputPath(), "labav_err.log"), 'w')
+        self._encOut = open(os.path.join(self.GetOutputPath(), "mencoder_out.log"), 'w')
+        self._encErr = open(os.path.join(self.GetOutputPath(), "mencoder_err.log"), 'w')
         
         cmd = self._GetCmd()
         self._procEncoder = Popen(cmd, stdin=PIPE, stdout=self._encOut, stderr=self._encErr, shell=False)#, bufsize=-1)
@@ -139,7 +140,7 @@ class LibAvRenderer(BaseRenderer):
     
     def _GetSubArgs(self):
         if not (self.__class__.GetProperty("RenderSubtitle").lower() in ["0", _(u"no"), "false"]):
-            subArgs = ["-c:s", os.path.join(self.GetOutputPath(), "output.srt"),
+            subArgs = ["-sub", os.path.join(self.GetOutputPath(), "output.srt"),
                        "-subcp", "utf8"]
         else:
             subArgs = []
@@ -149,7 +150,7 @@ class LibAvRenderer(BaseRenderer):
         if self.GetAudioFile() is None:
             audioArgs = []
         else:
-            audioArgs = ["-i", self.GetAudioFile()]
+            audioArgs = ["-audiofile", self.GetAudioFile()]
         return audioArgs
     
     def _GetFrameRate(self):
@@ -170,65 +171,99 @@ class LibAvRenderer(BaseRenderer):
         return bitrate
 
 
-class MPEGRenderer(LibAvRenderer):
+class _MPEGRenderer(_MEncoderRenderer):
     
     def __init__(self):
-        LibAvRenderer.__init__(self)
+        _MEncoderRenderer.__init__(self)
         
     @staticmethod
-    def GetName():
-        return _(u"MPEG(1/2)-Video (MPG)")
-    
-    @staticmethod
     def GetProperties():
-        return LibAvRenderer.GetProperties()
+        return _MEncoderRenderer.GetProperties()
 
     @staticmethod
     def GetDefaultProperty(prop):
-        return LibAvRenderer.GetDefaultProperty(prop)
+        return _MEncoderRenderer.GetDefaultProperty(prop)
 
     def _GetCmd(self):
-        cmd = ["avconv", "-y", "-f", "mjpeg", "-i", "pipe:0", "-r", "25"]
-        cmd += self._GetAudioArgs()
-        cmd += self._GetSubArgs()
-
         aspect = "%.3f" % Aspect.ToFloat(self._aspect)
         profile = self.GetProfile()
-
         if profile.GetVideoNorm() == OutputProfile.PAL:
-            videonorm = "pal"
             keyint = 15
+#             res = profile.GetResolution()
         else:
-            videonorm = "ntsc"
             keyint = 18
+#             res = profile.GetResolution()
             
-        if profile.GetName() == "VCD":
-            cmd += ["-target", '%s-vcd' % videonorm]
-#            lavcopts = "vcodec=mpeg1video:keyint=%(keyint)s:vrc_buf_size=327:vrc_minrate=1152:vbitrate=1152:vrc_maxrate=1152:acodec=mp2:abitrate=224:aspect=%(aspect)s" % {"keyint": keyint,
-#                                                                                                                                                                           "aspect": aspect}
-        elif profile.GetName() == "SVCD":
-            cmd += ["-target", '%s-svcd' % videonorm]
-#            lavcopts = "vcodec=mpeg2video:mbd=2:keyint=%(keyint)s:vrc_buf_size=917:vrc_minrate=600:vbitrate=2500:vrc_maxrate=2500:acodec=mp2:abitrate=224:aspect=%(aspect)s" % {"keyint": keyint,
-#                                                                                                                                                                                "aspect": aspect}
-        elif profile.GetName() == "DVD":
-            cmd += ["-target", '%s-dvd' % videonorm]
-#            lavcopts = "vcodec=mpeg2video:vrc_buf_size=1835:vrc_maxrate=9800:vbitrate=5000:keyint=%(keyint)s:vstrict=0:acodec=ac3:abitrate=192:aspect=%(aspect)s" % {"keyint": keyint,
-#                                                                                                                                                                     "aspect": aspect}
-        else:
+        if profile.GetName() not in ["VCD", "SVCD", "DVD"]:
             raise RendererException(_(u'MPEG format supports only VCD, SVCD and DVD profile!'))
+
+        srate, lavcopts = self._GetCmdOptions(aspect, keyint)
             
 #              "-vf scale=%(resx)d:%(resy)d,harddup " \
 #              "-of mpeg -mpegopts format=%(format)s " \
 #              "-ofps %(framerate)s " \
-        cmd += [os.path.join(self.GetOutputPath(), "output.mpg")]
-        print cmd
+        cmd = ["mencoder", "-demuxer", "lavf", "-fps", "25", "-lavfdopts", "format=mjpeg"]
+        cmd += self._GetAudioArgs()
+        cmd += self._GetSubArgs()
+        cmd += ["-oac", "lavc", "-ovc", "lavc",
+                "-of", "lavf", "-lavfopts", "format=mpg",
+                "-srate", srate, "-af", "lavcresample=%s" % srate,
+                "-lavcopts", lavcopts, 
+                "-ofps", "25",
+                "-o", os.path.join(self.GetOutputPath(), "output.mpg"),
+                "-"]        
         return cmd
+    
+    def _GetCmdOptions(self, aspect, keyint):
+        raise NotImplementedError()
 
 
-class MPEG4AC3Renderer(LibAvRenderer):
+class VCDFormat(_MPEGRenderer):
+    
+    @staticmethod
+    def GetName():
+        return "VCD (MPG)"
+    
+    def _GetCmdOptions(self, aspect, keyint):
+#         mpgFormat = "xvcd"
+        srate = "44100"
+        lavcopts = "vcodec=mpeg1video:keyint=%(keyint)s:vrc_buf_size=327:vrc_minrate=1152:vbitrate=1152:vrc_maxrate=1152:acodec=mp2:abitrate=224:aspect=%(aspect)s" % {"keyint": keyint,
+                                                                                                                                                                       "aspect": aspect}
+        return srate, lavcopts
+
+
+class SVCDFormat(_MPEGRenderer):
+    
+    @staticmethod
+    def GetName():
+        return "SVCD (MPG)"
+    
+    def _GetCmdOptions(self, aspect, keyint):
+#         mpgFormat = "xsvcd"
+        srate = "44100"
+        lavcopts = "vcodec=mpeg2video:mbd=2:keyint=%(keyint)s:vrc_buf_size=917:vrc_minrate=600:vbitrate=2500:vrc_maxrate=2500:acodec=mp2:abitrate=224:aspect=%(aspect)s" % {"keyint": keyint,
+                                                                                                                                                                            "aspect": aspect}
+        return srate, lavcopts
+
+
+class DVDFormat(_MPEGRenderer):
+    
+    @staticmethod
+    def GetName():
+        return "DVD (MPG)"
+    
+    def _GetCmdOptions(self, aspect, keyint):
+#         mpgFormat = "dvd:tsaf"
+        srate = "48000"
+        lavcopts = "vcodec=mpeg2video:vrc_buf_size=1835:vrc_maxrate=9800:vbitrate=5000:keyint=%(keyint)s:vstrict=0:acodec=ac3:abitrate=192:aspect=%(aspect)s" % {"keyint": keyint,
+                                                                                                                                                                 "aspect": aspect}
+        return srate, lavcopts
+
+
+class MPEG4AC3Renderer(_MEncoderRenderer):
     
     def __init__(self):
-        LibAvRenderer.__init__(self)
+        _MEncoderRenderer.__init__(self)
         
     @staticmethod
     def GetName():
@@ -236,54 +271,54 @@ class MPEG4AC3Renderer(LibAvRenderer):
 
     @staticmethod
     def GetProperties():
-        return LibAvRenderer.GetProperties() + ["FFOURCC"]
+        return _MEncoderRenderer.GetProperties() + ["FFOURCC"]
 
     @staticmethod
     def GetDefaultProperty(prop):
         if prop == "FFOURCC":
             return "XVID"
-        return LibAvRenderer.GetDefaultProperty(prop)
+        return _MEncoderRenderer.GetDefaultProperty(prop)
 
     def _GetCmd(self):
-        cmd = ["avconv", "-y", "-f", "mjpeg", "-i", "pipe:0", "-r", "25"]
+        cmd = ["mencoder", "-demuxer", "lavf", "-fps", "25", "-lavfdopts", "format=mjpeg"]
         cmd += self._GetAudioArgs()
         cmd += self._GetSubArgs()
-        cmd += ["-c:a", "ac3", #"-srate", "44100",
-                "-c:v", "libx264",
-                "-b:v", "%sk" % self._GetBitrate(),
-#                "-vf", "fps=%s" % self._GetFrameRate(), 
-#                "-ffourcc", MPEG4AC3Renderer.GetProperty('FFOURCC'),
-#                "-ofps", self._GetFrameRate(),
-                os.path.join(self.GetOutputPath(), "output.avi")]
+        cmd += ["-oac", "lavc", "-srate", "44100",
+                "-ovc", "lavc", 
+                "-lavcopts", "vcodec=mpeg4:vbitrate=%d:vhq:autoaspect:acodec=ac3" % self._GetBitrate(), 
+                "-ffourcc", MPEG4AC3Renderer.GetProperty('FFOURCC'),
+                "-ofps", self._GetFrameRate(),
+                "-o", os.path.join(self.GetOutputPath(), "output.avi"),
+                "-"]
         return cmd
 
 
-class MEncoderMP3Renderer(LibAvRenderer):
+class _MEncoderMP3Renderer(_MEncoderRenderer):
     
     def __init__(self):
-        LibAvRenderer.__init__(self)
+        _MEncoderRenderer.__init__(self)
         
-#     @staticmethod
-#     def CheckDependencies(msgList):
-#         LibAvRenderer.CheckDependencies(msgList)
-#         if msgList:
-#             return
-#         
-#         try:
-#             proc = Popen(["mencoder", "-oac", "help"], stdout=PIPE, stderr=STDOUT, shell=False)
-#             output = proc.communicate()[0]
-#         except Exception, err:
-#             logging.debug("checking for mencoder (mp3support) failed: %s", err)
-#             output = ""
-#            
-#         if output.find("mp3lame") == -1:
-#             msgList.append(_(u"mencoder with MP3 support (mp3lame) required!"))
+    @staticmethod
+    def CheckDependencies(msgList):
+        _MEncoderRenderer.CheckDependencies(msgList)
+        if msgList:
+            return
+        
+        try:
+            proc = Popen(["mencoder", "-oac", "help"], stdout=PIPE, stderr=STDOUT, shell=False)
+            output = proc.communicate()[0]
+        except Exception as err:
+            logging.debug("checking for mencoder (mp3support) failed: %s", err)
+            output = ""
+        
+        if output.find("mp3lame") == -1:
+            msgList.append(_(u"mencoder with MP3 support (mp3lame) required!"))
 
 
-class MPEG4MP3Renderer(MEncoderMP3Renderer):
+class MPEG4MP3Renderer(_MEncoderMP3Renderer):
     
     def __init__(self):
-        MEncoderMP3Renderer.__init__(self)
+        _MEncoderMP3Renderer.__init__(self)
         
     @staticmethod
     def GetName():
@@ -291,45 +326,37 @@ class MPEG4MP3Renderer(MEncoderMP3Renderer):
 
     @staticmethod
     def GetProperties():
-        return MEncoderMP3Renderer.GetProperties() + ["FFOURCC"]
+        return _MEncoderMP3Renderer.GetProperties() + ["FFOURCC"]
 
     @staticmethod
     def GetDefaultProperty(prop):
         if prop == "FFOURCC":
             return "XVID"
-        return MEncoderMP3Renderer.GetDefaultProperty(prop)
+        return _MEncoderMP3Renderer.GetDefaultProperty(prop)
 
     def _GetCmd(self):
-        cmd = ["avconv", "-y", "-f", "mjpeg", "-i", "pipe:0", "-r", "25"]
+        cmd = ["mencoder", "-demuxer", "lavf", "-fps", "25", "-lavfdopts", "format=mjpeg"]
         cmd += self._GetAudioArgs()
         cmd += self._GetSubArgs()
-        cmd += ["-c:a", "libmp3lame", "-ar", "44100",
-                "-c:v", "libx264",
-                "-b:v", "%sk" % self._GetBitrate(),
-#                "-vf", "fps=%s" % self._GetFrameRate(), 
-#                "-ffourcc", MPEG4AC3Renderer.GetProperty('FFOURCC'),
-#                "-ofps", self._GetFrameRate(),
-                os.path.join(self.GetOutputPath(), "output.avi")]
+        cmd += ["-oac", "mp3lame", "-lameopts", "cbr:br=192", "-srate", "44100",
+                "-ovc", "lavc", 
+                "-lavcopts", "vcodec=mpeg4:vbitrate=%d:vhq:autoaspect" % self._GetBitrate(), 
+                "-ffourcc", MPEG4MP3Renderer.GetProperty('FFOURCC'),
+                "-ofps", self._GetFrameRate(),
+                "-o", os.path.join(self.GetOutputPath(), "output.avi"),
+                "-"]
         return cmd
 
-        
-class FlashMovieRenderer(MEncoderMP3Renderer):
+
+class FlashMovieRenderer(_MEncoderMP3Renderer):
     
     def __init__(self):
-        MEncoderMP3Renderer.__init__(self)
+        _MEncoderMP3Renderer.__init__(self)
         
     @staticmethod
     def GetName():
         return _(u"Flash-Video (FLV)")
     
-    @staticmethod
-    def GetProperties():
-        return MEncoderMP3Renderer.GetProperties()
-
-    @staticmethod
-    def GetDefaultProperty(prop):
-        return MEncoderMP3Renderer.GetDefaultProperty(prop)
-
     def _GetCmd(self):
         cmd = ["mencoder", "-demuxer", "lavf", "-fps", "25", "-lavfdopts", "format=mjpeg"]
         cmd += self._GetAudioArgs()
@@ -344,23 +371,15 @@ class FlashMovieRenderer(MEncoderMP3Renderer):
         return cmd
 
 
-class MJPEGRenderer(LibAvRenderer):
+class MJPEGRenderer(_MEncoderRenderer):
     
     def __init__(self):
-        LibAvRenderer.__init__(self)
+        _MEncoderRenderer.__init__(self)
         
     @staticmethod
     def GetName():
         return _(u"Motion-JPEG (AVI)")
     
-    @staticmethod
-    def GetProperties():
-        return LibAvRenderer.GetProperties()
-
-    @staticmethod
-    def GetDefaultProperty(prop):
-        return LibAvRenderer.GetDefaultProperty(prop)
-
     def _GetCmd(self):
         cmd = ["mencoder", "-demuxer", "lavf", "-fps", "25", "-lavfdopts", "format=mjpeg"]
         cmd += self._GetAudioArgs()
