@@ -166,7 +166,7 @@ class ActionManager(object):
         self.__CreateMenuItem(menu, 
                               self.ID_PROJECT_PROPS, 
                               _("&Properties"), 
-                              wx.ArtProvider_GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_MENU, self._menuSize))
+                              wx.ArtProvider.GetBitmap(wx.ART_EXECUTABLE_FILE, wx.ART_MENU, self._menuSize))
         menu.AppendSeparator()
         self.__CreateMenuItem(menu, 
                               wx.ID_EXIT, 
@@ -246,7 +246,7 @@ class ActionManager(object):
         langMenu.AppendRadioItem(self.ID_LANG_TA, u"தமிழ்")
         langMenu.AppendRadioItem(self.ID_LANG_UK, u"Український")
         langMenu.AppendRadioItem(self.ID_LANG_EL, u"ελληνικά")
-        menu.AppendMenu(wx.NewId(), _("Language"), langMenu)
+        menu.Append(wx.NewId(), _("Language"), langMenu)
         menu.AppendSeparator()
         self.__CreateMenuItem(menu, 
                               wx.ID_ABOUT, 
