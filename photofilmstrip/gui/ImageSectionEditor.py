@@ -115,6 +115,8 @@ class ImageSectionEditor(wx.Panel, Observer):
             return
 
         cw, ch = self.GetClientSize().Get()
+        if cw == 0 or ch == 0:
+            return
         iw, ih = self._imgProxy.GetSize()
         rx = float(cw) / float(iw)
         ry = float(ch) / float(ih)
@@ -128,7 +130,7 @@ class ImageSectionEditor(wx.Panel, Observer):
             newWidth = iw * ry
             self._zoom = ry 
         
-        self._imgProxy.Scale(newWidth, newHeight)
+        self._imgProxy.Scale(int(round(newWidth)), int(round(newHeight)))
         
     def __DrawBitmap(self, dc):
         if self._imgProxy.IsOk():
@@ -159,10 +161,10 @@ class ImageSectionEditor(wx.Panel, Observer):
         sectRect = self.__SectRectToClientRect()
         
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
-        iRect = wx.RectPS(sectRect.GetPosition(), sectRect.GetSize())
+        iRect = wx.Rect(sectRect.GetPosition(), sectRect.GetSize())
         dc.SetPen(wx.WHITE_PEN)
         iRect.Inflate(1, 1)
-        dc.DrawRectangleRect(iRect)
+        dc.DrawRectangle(iRect)
         
         #draw background
         color = wx.Colour(0, 0, 0, 153)
@@ -187,13 +189,13 @@ class ImageSectionEditor(wx.Panel, Observer):
         if alpha < 0:
             alpha = 0
         dc.SetTextForeground(wx.Colour(255, 255, 255, alpha))
-        font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FIXED_FONT)
+        font = wx.SystemSettings.GetFont(wx.SYS_ANSI_FIXED_FONT)
         font.SetPointSize(16)
         font.SetWeight(wx.BOLD)
         dc.SetFont(font)
         dc.SetPen(wx.WHITE_PEN)
         dc.SetBrush(wx.TRANSPARENT_BRUSH)
-        dc.DrawRectangleRect(sectRect)
+        dc.DrawRectangle(sectRect)
         dc.DrawLabel("%d, %d - %d x %d" % tuple(self._sectRect), 
                      sectRect,
                      wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL)
@@ -272,7 +274,7 @@ class ImageSectionEditor(wx.Panel, Observer):
         elif abs(cpy - bry) < self.BORDER_TOLERANCE and (tlx < cpx < brx):
             return self.POSITION_BOTTOM            
         
-        elif self._sectRect.ContainsXY(cpx, cpy):
+        elif self._sectRect.Contains(cpx, cpy):
             return self.POSITION_INSIDE
         else:                
             return None
@@ -290,14 +292,14 @@ class ImageSectionEditor(wx.Panel, Observer):
         
         #the Borders
         elif position in [self.POSITION_LEFT, self.POSITION_RIGHT]:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZEWE))
+            self.SetCursor(wx.Cursor(wx.CURSOR_SIZEWE))
         elif position in [self.POSITION_TOP, self.POSITION_BOTTOM]:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZENS))
+            self.SetCursor(wx.Cursor(wx.CURSOR_SIZENS))
         
         elif position == self.POSITION_INSIDE:
-            self.SetCursor(wx.StockCursor(wx.CURSOR_SIZING))
+            self.SetCursor(wx.Cursor(wx.CURSOR_SIZING))
         else:                
-            self.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+            self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
             
     def OnCaptureLost(self, event):
         if self._action is not None:
@@ -428,8 +430,11 @@ class ImageSectionEditor(wx.Panel, Observer):
                     ny = self._imgProxy.GetHeight()
                     
                 #everything should be ok now
-                self._sectRect.Set(nx, ny, width, height)              
-#           
+                self._sectRect.SetX(nx)
+                self._sectRect.SetY(ny)
+                self._sectRect.SetWidth(width)
+                self._sectRect.SetHeight(height)
+
             self._SendRectChangedEvent()
             
             self.__UpdateSectRect()
@@ -583,7 +588,7 @@ class ImageSectionEditor(wx.Panel, Observer):
         return self._sectRect
     
     def SetSection(self, rect):
-        self._sectRect = wx.RectPS(rect.GetPosition(), rect.GetSize())
+        self._sectRect = wx.Rect(rect.GetPosition(), rect.GetSize())
         self.Refresh()
         
     def SetLock(self, lock):
@@ -608,7 +613,7 @@ class ScaleThread(threading.Thread):
                 return
         
         pilImg = PILBackend.GetImage(self._picture)
-        wxImg = wx.ImageFromStream(PILBackend.ImageToStream(pilImg), wx.BITMAP_TYPE_JPEG)
+        wxImg = wx.Image(PILBackend.ImageToStream(pilImg), wx.BITMAP_TYPE_JPEG)
 
         if not self._abort:
             self._callbackOnDone(wxImg)

@@ -27,13 +27,8 @@ from PIL import Image, ImageDraw
 from photofilmstrip.core.Picture import Picture
 
 
-class StrWriter(io.StringIO):
-    def write(self, data):
-        return io.StringIO.write(self, str(data))
-
-
 def ImageToStream(pilImg, imgFormat="JPEG"):
-    fd = StrWriter()
+    fd = io.BytesIO()
     pilImg.save(fd, imgFormat)
     fd.seek(0)
     return fd

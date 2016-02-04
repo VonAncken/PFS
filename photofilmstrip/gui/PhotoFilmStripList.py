@@ -150,17 +150,17 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         dc.SetPen(wx.TRANSPARENT_PEN)
         for selIdx in self.__selIdxs:
             rect = self.GetThumbRect(selIdx)
-            rect.OffsetXY(-vs, 0)
+            rect.Offset(-vs, 0)
             col = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
             dc.SetBrush(wx.Brush(wx.Colour(col.Red(), col.Green(), col.Blue(), 180)))
-            dc.DrawRectangleRect(rect)
+            dc.DrawRectangle(rect)
         if self.__hvrIdx != -1:
             rect = self.GetThumbRect(self.__hvrIdx)
-            rect.OffsetXY(-vs, 0)
+            rect.Offset(-vs, 0)
             col = wx.SystemSettings.GetColour(wx.SYS_COLOUR_HIGHLIGHT)
             color = wx.Colour(col.Red(), col.Green(), col.Blue(), 80)
             dc.SetBrush(wx.Brush(color))
-            dc.DrawRectangleRect(rect)
+            dc.DrawRectangle(rect)
 
     def _SendChangedEvent(self):
         evt = ChangedEvent(self.GetId())
