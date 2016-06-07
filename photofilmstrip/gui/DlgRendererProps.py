@@ -43,20 +43,20 @@ class DlgRendererProps(wx.Dialog):
     def _init_coll_sizerCmd_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.cmdHelp, 0, border=0, flag=0)
+        parent.Add(self.cmdHelp, 0, border=0, flag=0)
         parent.AddStretchSpacer(1)
-        parent.AddWindow(self.cmdCancel, 0, border=0, flag=0)
-        parent.AddSpacer(wx.Size(8, 8), border=0, flag=0)
-        parent.AddWindow(self.cmdOk, 0, border=0, flag=0)
+        parent.Add(self.cmdCancel, 0, border=0, flag=0)
+        parent.AddSpacer(8)
+        parent.Add(self.cmdOk, 0, border=0, flag=0)
 
     def _init_coll_sizerMain_Items(self, parent):
         # generated method, don't edit
 
-        parent.AddWindow(self.pnlHdr, 0, border=0, flag=wx.EXPAND)
-        parent.AddWindow(self.lcProps, 1, border=0, flag=wx.EXPAND)
-        parent.AddWindow(self.staticLine, 0, border=8,
+        parent.Add(self.pnlHdr, 0, border=0, flag=wx.EXPAND)
+        parent.Add(self.lcProps, 1, border=0, flag=wx.EXPAND)
+        parent.Add(self.staticLine, 0, border=8,
               flag=wx.TOP | wx.BOTTOM | wx.EXPAND)
-        parent.AddSizer(self.sizerCmd, 0, border=4, flag=wx.EXPAND | wx.ALL)
+        parent.Add(self.sizerCmd, 0, border=4, flag=wx.EXPAND | wx.ALL)
 
     def _init_coll_lcProps_Columns(self, parent):
         # generated method, don't edit

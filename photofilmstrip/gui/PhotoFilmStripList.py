@@ -190,7 +190,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         if event.Dragging():
             if mPos.x < 10:
                 self.__Scroll(-40)
-            elif mPos.x > self.GetClientSizeTuple()[0] - 10:
+            elif mPos.x > self.GetClientSize()[0] - 10:
                 self.__Scroll(40)
             self.__dragX = unscrolledPos.x
             if self.__dragPic is None and idx != -1:
@@ -276,7 +276,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         rect = self.GetThumbRect(idx)
         left = rect.GetLeft()
         vs = self.GetViewStart()[0]
-        ch = self.GetClientSizeTuple()[0]
+        ch = self.GetClientSize()[0]
         if left < vs:
             self.Scroll(left, 0)
         elif left > vs + ch:
