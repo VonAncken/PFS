@@ -43,9 +43,14 @@ class PhotoFilmStripList(wx.ScrolledWindow):
     THUMB_HEIGHT = 120
     HOLE_WIDTH = 11
     HOLE_HEIGHT = 16
-    HOLE_PADDING = 13       # distance between holes
-    HOLE_MARGIN = 6         # distance to thumb
+    HOLE_PADDING = 13                                       # distance between holes
+    HOLE_MARGIN = 6                                         # distance to thumb
+    HOLE_COLOUR = wx.Colour(235, 235, 235)
     LABEL_MARGIN = 8
+    LABEL_COLOUR = wx.Colour(237, 156, 0)
+    SELECTION_BCK_COLOUR = wx.Colour(38, 54, 70)
+    SELECTION_BORDER_COLOUR = wx.Colour(237, 156, 0)
+    HIGHLIGHTING_BCK_COLOUR = wx.Colour(77, 136, 196, 80)
 
     STRIP_HEIGHT = THUMB_HEIGHT + 2 * BORDER
 
@@ -126,16 +131,17 @@ class PhotoFilmStripList(wx.ScrolledWindow):
 
             if diaRect.right + 1 >= 0 and idx != self.__dragIdx:
                 if diaRect.left <= clientWidth:
-                    label = os.path.splitext(os.path.basename(pic.GetFilename()))[0]
-                    diaNo = idx + 1
+                    if self.IsExposedRect(diaRect):
+                        label = os.path.splitext(os.path.basename(pic.GetFilename()))[0]
+                        diaNo = idx + 1
 
-                    if idx >= self.__dropIdx and idx < self.__dragIdx:
-                        diaNo += 1
+                        if idx >= self.__dropIdx and idx < self.__dragIdx:
+                            diaNo += 1
 
-                    if idx <= self.__dropIdx and idx > self.__dragIdx:
-                        diaNo -= 1
+                        if idx <= self.__dropIdx and idx > self.__dragIdx:
+                            diaNo -= 1
 
-                    self.__DrawDia(dc, diaRect, diaRect.x + vx, bmp, str(diaNo), label, idx in self.__selIdxs, idx == self.__hvrIdx)
+                        self.__DrawDia(dc, diaRect, diaRect.x + vx, bmp, str(diaNo), label, idx in self.__selIdxs, idx == self.__hvrIdx)
                 else:
                     break
 
@@ -183,36 +189,35 @@ class PhotoFilmStripList(wx.ScrolledWindow):
         font.SetPointSize(9)
         dc.SetFont(font)
 
-        colour = wx.Colour(235, 235, 235)
-
         bmpX = rect.x + self.GAP / 2
         bmpY = (rect.height - thumbBmp.GetHeight()) / 2
 
         holeX = rect.x + self.GAP / 2 - (holeOffset % (self.HOLE_WIDTH + self.HOLE_PADDING))
 
+        diaNoWidth, textHeight = dc.GetTextExtent(diaNo)
+        label, labelWidth = ChopText(dc, label, thumbBmp.GetWidth())
+
         dc.SetClippingRect(rect)
 
         if selected:
-            dc.SetBackground(wx.Brush(wx.Colour(38, 54, 70)))
+            dc.SetBackground(wx.Brush(self.SELECTION_BCK_COLOUR))
             dc.Clear()
-            dc.SetPen(wx.Pen(wx.Colour(237, 156, 0)))
-            dc.SetBrush(wx.Brush(wx.Colour(237, 156, 0)))
+            dc.SetPen(wx.Pen(self.SELECTION_BORDER_COLOUR))
+            dc.SetBrush(wx.Brush(self.SELECTION_BORDER_COLOUR))
             dc.DrawRectangle(rect.x, 0, rect.right + 1, 3)
             dc.DrawRectangle(rect.x, rect.bottom - 2, rect.right + 1, rect.bottom)
         else:
             dc.SetBackground(wx.BLACK_BRUSH)
             dc.Clear()
 
-        dc.SetTextForeground(wx.Colour(237, 156, 0))
-        dc.SetBrush(wx.Brush(colour))
-        dc.SetPen(wx.Pen(colour))
-
-        diaNoWidth, textHeight = dc.GetTextExtent(diaNo)
-        label, labelWidth = ChopText(dc, label, thumbBmp.GetWidth())
-
         dc.DrawBitmap(thumbBmp, bmpX, bmpY, True)
+
+        dc.SetTextForeground(self.LABEL_COLOUR)
         dc.DrawText(diaNo, rect.x + (rect.width - diaNoWidth) / 2, self.LABEL_MARGIN - 3)
         dc.DrawText(label, rect.x + (rect.width - labelWidth) / 2, rect.height - self.LABEL_MARGIN - textHeight)
+
+        dc.SetBrush(wx.Brush(self.HOLE_COLOUR))
+        dc.SetPen(wx.Pen(self.HOLE_COLOUR))
 
         while holeX <= rect.right + 1:
             dc.DrawRoundedRectangle(holeX, self.BORDER - self.HOLE_MARGIN - self.HOLE_HEIGHT, self.HOLE_WIDTH, self.HOLE_HEIGHT, 2)
@@ -221,7 +226,7 @@ class PhotoFilmStripList(wx.ScrolledWindow):
 
         if highlighted:
             dc.SetPen(wx.TRANSPARENT_PEN)
-            dc.SetBrush(wx.Brush(wx.Colour(77, 136, 196, 80)))
+            dc.SetBrush(wx.Brush(self.HIGHLIGHTING_BCK_COLOUR))
             dc.DrawRectangleRect(rect)
 
         dc.DestroyClippingRegion()
